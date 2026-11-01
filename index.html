@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><title>Pagewright – PDF Editor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&family=Noto+Sans+Devanagari:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Playfair+Display:wght@400;700&family=Merriweather:wght@400;700&family=Oswald:wght@400;700&family=Dancing+Script:wght@400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--desk:#c6c9ce;--bar:#b4b8be;--ink:#23262b;--btn:#2b2e33;--btnink:#f1f2f4;--accent:#f2b84b;--sel:#2f6fe4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--desk:#5b5f66;--bar:#4c5056;--ink:#f1f2f4}}
@@ -31,9 +31,9 @@ button,select,input{font:inherit}
 .card{position:relative;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.28);aspect-ratio:.707;overflow:hidden}
 .card canvas{display:block;width:100%;height:auto}
 .card.drag{opacity:.45}.card.tgt{outline:3px solid var(--accent)}
-.ovl{position:absolute;inset:0;background:rgba(0,0,0,.5)}
-.ci{position:absolute;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#1d1f22;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ci:hover{background:var(--accent)}.ci{font-size:17px}.svg-inline--fa{height:1em;width:auto;vertical-align:-.125em}.ov{overflow:hidden}
+.ovl{position:absolute;inset:0;background:rgba(0,0,0,.2);transition:background .2s}.card:hover .ovl{background:rgba(0,0,0,.4)}
+.ci{position:absolute;width:38px;height:38px;border-radius:50%;border:0;background:rgba(22,24,28,.5);color:#f1f2f4;border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(3px);opacity:.78;transition:opacity .2s,background .2s;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ci:hover{background:rgba(255,255,255,.92);color:#1d1f22;opacity:1}.card:hover .ci{opacity:1}.ci{font-size:17px}.svg-inline--fa{height:1em;width:auto;vertical-align:-.125em}.ov{overflow:hidden}
 .ci.del{top:10px;right:10px}.ci.mov{bottom:10px;right:10px;cursor:grab;touch-action:none}
 .mid{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:center;gap:14px}.mid .ci{position:static}
 .num{position:absolute;left:10px;bottom:12px;color:#fff;font-weight:600;text-shadow:0 1px 3px #000}
@@ -60,6 +60,10 @@ button,select,input{font:inherit}
 .tool-patch .pg,.tool-text .pg{cursor:crosshair}
 #msg{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1b1d21;color:#fff;padding:8px 14px;border-radius:6px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40;max-width:88vw}
 #msg.on{opacity:1}
+#dd{display:none;position:fixed;z-index:47;max-height:220px;overflow-y:auto;background:#25282c;border:1px solid #4a4f56;border-radius:6px;padding:4px;width:68px;scrollbar-width:thin}
+#dd button{display:block;width:100%;background:none;border:0;color:#e8eaed;padding:6px;font-size:16px;cursor:pointer;text-align:center;border-radius:3px}#dd button:hover,#dd .cur{background:var(--sel)}
+#cp{display:none;position:fixed;z-index:49;width:250px;background:#25282c;color:#e8eaed;border:1px solid #4a4f56;border-radius:8px;padding:12px;flex-direction:column;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#cpi{font-size:12px;color:#aab0b8;min-height:34px;line-height:1.45}#cp .btn{align-self:flex-end}
 *{touch-action:pan-x pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 [contenteditable],input[type=text],input[type=number]{-webkit-user-select:text;user-select:text}
 .ci.mov,.ch,.cbx,.rh,.sqp canvas{touch-action:none}
@@ -81,7 +85,7 @@ body{touch-action:pan-x pan-y}
 .card.cmp .ovl{display:flex;align-items:center;justify-content:center;gap:6px}
 .card.cmp .ci,.card.cmp .mid{position:static;transform:none;width:30px;height:30px;font-size:14px}.card.cmp .mid{display:contents}
 .card.cmp .ci.mov{order:4}.card.cmp .ci.del{order:5}.card.cmp .num{display:none}
-.btn{font-size:15px;min-width:40px}.pb{font-size:14px;min-width:34px}.pl{font-size:14px}
+.btn{font-size:15px;min-width:40px}.ci{font-size:14px!important;width:32px;height:32px}.pl select{width:122px}.pb{font-size:14px;min-width:34px}.pl{font-size:14px}
 @keyframes rin{from{transform:rotate(-90deg) scale(.72);opacity:.35}to{transform:none;opacity:1}}.card canvas.rt{animation:rin .32s ease-out}
 #cm{display:none;position:fixed;inset:0;z-index:55;background:rgba(20,22,25,.93);flex-direction:column;align-items:center;gap:12px;padding:12px;overflow:auto}.cbar{display:flex;gap:8px}
 .cwrap{position:relative;flex:none;box-sizing:content-box}.cin{position:relative;overflow:hidden}.cbx{position:absolute;border:2px solid var(--accent);box-shadow:0 0 0 9999px rgba(0,0,0,.55);cursor:move;touch-action:none}
@@ -103,7 +107,7 @@ body{touch-action:pan-x pan-y}
   <button class="btn" id="exp" title="Export" disabled><i class="fa-solid fa-file-export"></i></button></div>
  <div id="gridwrap"><div class="grid" id="grid"></div></div></div>
 <div id="ed"><div id="panel"></div><div id="work"><div id="stage"></div></div></div>
-<div id="mbar"><span id="mc"></span><button class="btn" id="mh" title="Merge side by side" disabled><i class="fa-solid fa-arrows-left-right"></i></button><button class="btn" id="mv" title="Merge top to bottom" disabled><i class="fa-solid fa-arrows-up-down"></i></button><button class="btn" id="mx" title="Cancel"><i class="fa-solid fa-xmark"></i></button></div><div id="cm"></div><div id="xm"><button class="btn" id="xpdf" title="Download PDF"><i class="fa-solid fa-file-pdf"></i></button><button class="btn" id="xas" title="Save as"><i class="fa-solid fa-floppy-disk"></i></button><button class="btn" id="xpng" title="Pages as PNG (ZIP)"><i class="fa-solid fa-file-zipper"></i></button></div><div id="sv"><input id="svn" type="text"><button class="btn" id="svok" title="Save"><i class="fa-solid fa-check"></i></button><button class="btn" id="svx" title="Cancel"><i class="fa-solid fa-xmark"></i></button></div><input id="imgf" type="file" accept="image/*" hidden><div id="pop"></div><div id="msg"></div><input id="file" type="file" accept="application/pdf,image/*" multiple hidden>
+<div id="mbar"><span id="mc"></span><button class="btn" id="mh" title="Merge side by side" disabled><i class="fa-solid fa-arrows-left-right"></i></button><button class="btn" id="mv" title="Merge top to bottom" disabled><i class="fa-solid fa-arrows-up-down"></i></button><button class="btn" id="mx" title="Cancel"><i class="fa-solid fa-xmark"></i></button></div><div id="cm"></div><div id="xm"><button class="btn" id="xpdf" title="Download PDF"><i class="fa-solid fa-file-pdf"></i></button><button class="btn" id="xas" title="Save as"><i class="fa-solid fa-floppy-disk"></i></button><button class="btn" id="xpng" title="Pages as PNG (ZIP)"><i class="fa-solid fa-file-zipper"></i></button><button class="btn" id="xcp" title="Compress PDF"><i class="fa-solid fa-compress"></i></button></div><div id="cp"><label class="rg" title="Compression"><span><i class="fa-solid fa-compress"></i></span><input id="cpr" type="range" min="10" max="90" step="5" value="50"><b id="cpv">50%</b></label><div id="cpi"></div><button class="btn" id="cpd" title="Compress and download"><i class="fa-solid fa-download"></i></button></div><div id="dd"></div><div id="sv"><input id="svn" type="text"><button class="btn" id="svok" title="Save"><i class="fa-solid fa-check"></i></button><button class="btn" id="svx" title="Cancel"><i class="fa-solid fa-xmark"></i></button></div><input id="imgf" type="file" accept="image/*" hidden><div id="pop"></div><div id="msg"></div><input id="file" type="file" accept="application/pdf,image/*" multiple hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -114,7 +118,7 @@ const {PDFDocument,StandardFonts,rgb,degrees,PDFName,PDFString}=PDFLib,pj=window
 pj.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const $=s=>document.querySelector(s),el=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e};
 const S={docs:[],pages:[],cur:0,z:1.2,tool:'select',view:'grid',hist:[],fut:[],meta:{},op:null,tok:0,pc:'#ffffff',ts:0,fn:'document.pdf',img:{},ed:null,eop:null,rng:null};let uid=1,mt;
-const FAM={Helvetica:'Helvetica,Arial,"Noto Sans Devanagari",sans-serif',Times:'"Times New Roman",Times,"Noto Sans Devanagari",serif',Courier:'"Courier New",Courier,"Noto Sans Devanagari",monospace',Devanagari:'"Noto Sans Devanagari",Helvetica,Arial,sans-serif'};
+const FAM={Helvetica:'Helvetica,Arial,"Noto Sans Devanagari",sans-serif',Times:'"Times New Roman",Times,"Noto Sans Devanagari",serif',Courier:'"Courier New",Courier,"Noto Sans Devanagari",monospace',Devanagari:'"Noto Sans Devanagari",Helvetica,Arial,sans-serif',Arial:'Arial,Helvetica,"Noto Sans Devanagari",sans-serif',Georgia:'Georgia,"Times New Roman","Noto Sans Devanagari",serif',Verdana:'Verdana,Geneva,"Noto Sans Devanagari",sans-serif',Roboto:'Roboto,Helvetica,"Noto Sans Devanagari",sans-serif','Open Sans':'"Open Sans",Helvetica,"Noto Sans Devanagari",sans-serif',Lato:'Lato,Helvetica,"Noto Sans Devanagari",sans-serif',Montserrat:'Montserrat,Helvetica,"Noto Sans Devanagari",sans-serif',Poppins:'Poppins,Helvetica,"Noto Sans Devanagari",sans-serif','Playfair Display':'"Playfair Display",Georgia,"Noto Sans Devanagari",serif',Merriweather:'Merriweather,Georgia,"Noto Sans Devanagari",serif',Oswald:'Oswald,Impact,"Noto Sans Devanagari",sans-serif','Dancing Script':'"Dancing Script","Brush Script MT",cursive',Caveat:'Caveat,"Comic Sans MS",cursive'};
 const say=t=>{const m=$('#msg');m.textContent=t;m.classList.add('on');clearTimeout(mt);mt=setTimeout(()=>m.classList.remove('on'),3500)};
 ['gesturestart','gesturechange','gestureend'].forEach(n=>addEventListener(n,e=>e.preventDefault()));addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','-','=','0'].includes(e.key))e.preventDefault()});
 addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});addEventListener('contextmenu',e=>{if(!e.target.closest('input'))e.preventDefault()});addEventListener('dblclick',e=>{if(!e.target.closest('[contenteditable]'))e.preventDefault()});
@@ -292,8 +296,9 @@ function resize(e,op,b){e.stopPropagation();e.preventDefault();const r=S.lo.pare
   op.x=Math.min(f[0],q[0]);op.y=Math.min(f[1],q[1]);op.w=Math.max(2,Math.abs(f[0]-q[0]));op.h=Math.max(2,Math.abs(f[1]-q[1]));renderOps()};
  const u=()=>{removeEventListener('pointermove',m);removeEventListener('pointerup',u)};addEventListener('pointermove',m);addEventListener('pointerup',u)}
 /* text editing with per-selection formatting (runs) */
+function famKey(n){for(const k in FAM)if(FAM[k].split(',')[0].replace(/["']/g,'').trim().toLowerCase()===n)return k;return 'Helvetica'}
 function parseRuns(t,op){const out=[],rgb2=c=>{const m=c.match(/\d+/g);return m?'#'+m.slice(0,3).map(x=>(+x).toString(16).padStart(2,'0')).join(''):c};
- const walk=n=>{if(n.nodeType==3){const cs=getComputedStyle(n.parentNode),r={s:n.nodeValue},f0=cs.fontFamily.split(',')[0].replace(/["']/g,'').trim().toLowerCase(),f=/times/.test(f0)?'Times':/courier/.test(f0)?'Courier':/devanagari/.test(f0)?'Devanagari':'Helvetica',
+ const walk=n=>{if(n.nodeType==3){const cs=getComputedStyle(n.parentNode),r={s:n.nodeValue},f0=cs.fontFamily.split(',')[0].replace(/["']/g,'').trim().toLowerCase(),f=famKey(f0),
    b=+cs.fontWeight>=600,i=cs.fontStyle=='italic',c=rgb2(cs.color),sz=parseFloat(cs.fontSize)/S.z;
    if(b!==!!op.b)r.b=b;if(i!==!!op.i)r.i=i;if(c!==String(op.c).toLowerCase())r.c=c;if(f!==op.f)r.f=f;if(Math.abs(sz-op.sz)>.25)r.sz=+sz.toFixed(2);out.push(r)}
   else if(n.nodeName=='BR')out.push({s:'\n'});else n.childNodes.forEach(walk)};
@@ -325,7 +330,10 @@ function sqpick(init,cb){let[h,s,v]=hex2hsv(init);const w=el('div','sqp'),sw=el(
  hu.oninput=()=>{h=+hu.value;draw();cb(hsv2hex(h,s,v))};sw.append(sv,kn);w.append(sw,hu);draw();return w}
 function rg(ic,t,op,k,min,max,step){const w=el('label','rg'),sp=el('span'),i=el('input');w.title=t;sp.innerHTML=fa(ic);i.type='range';Object.assign(i,{min,max,step});i.value=op[k]??0;i.oninput=()=>{snapT();op[k]=+i.value;renderOps()};w.append(sp,i);return w}
 function csq(op,k,t){const i=el('input');i.type='color';i.className='sqc';i.title=t;i.value=op[k];i.oninput=()=>{snapT();op[k]=i.value;renderOps()};return i}
-function closePop(){const d=$('#pop');d.style.display='none';S.pb=null}
+function closePop(){const d=$('#pop');d.style.display='none';S.pb=null;$('#dd').style.display='none'}
+function showDD(btn,op,cb){const d=$('#dd');if(d.style.display=='block'&&S.ddb===btn){d.style.display='none';return}S.ddb=btn;d.innerHTML='';
+ for(let n=1;n<=100;n++){const b=el('button');b.textContent=n;if(Math.round(op.sz)==n)b.className='cur';b.onclick=()=>{d.style.display='none';cb(n)};d.append(b)}
+ const r=btn.getBoundingClientRect();d.style.display='block';d.style.left=Math.max(4,Math.min(r.left,innerWidth-76))+'px';d.style.top=r.bottom+4+'px';const c=d.querySelector('.cur');if(c)d.scrollTop=c.offsetTop-90}
 function showPop(btn,op){const d=$('#pop');d.innerHTML='';S.pb=btn;
  const sq=k=>d.append(sqpick(op[k],c=>{snapT();op[k]=c;if(k=='bg')S.pc=c;renderOps();if(S.dot&&k=='bg')S.dot.style.background=c})),row=(ic,t,i)=>{const w=el('label','pl');w.title=t;const sp=el('span');sp.innerHTML=fa(ic);w.append(sp,i);d.append(w)};
  if(op.t=='patch'){sq('bg');row('border-all','Border colour',csq(op,'bc','Border colour'));d.append(rg('grip-lines','Border thickness',op,'bw',0,12,.5),rg('circle-dot','Fade edges',op,'f',0,50,1),rg('circle-half-stroke','Opacity',op,'a',.05,1,.05))}
@@ -336,7 +344,7 @@ function showPop(btn,op){const d=$('#pop');d.innerHTML='';S.pb=btn;
   if(['url','mail','tel'].includes(op.act)){const u=el('input');u.type='text';u.value=op.url||'';u.placeholder=op.act=='url'?'https://…':op.act=='mail'?'name@mail.com':'+91…';u.oninput=()=>{op.url=u.value.trim()};d.append(u)}
   sq('bg');row('droplet','Label colour',csq(op,'fg','Label colour'));const v=el('button','btn');v.title='Invisible hotspot';v.innerHTML=fa(op.inv?'eye-slash':'eye');v.onclick=()=>{snapT();op.inv=op.inv?0:1;renderOps();showPop(btn,op)};d.append(v)}
  const r=btn.getBoundingClientRect();d.style.display='flex';d.style.left=Math.max(6,Math.min(r.left,innerWidth-232))+'px';d.style.top=r.bottom+6+'px'}
-addEventListener('pointerdown',e=>{if(!e.target.closest('#pop,#panel'))closePop()});
+addEventListener('pointerdown',e=>{if(!e.target.closest('#pop,#panel,#dd'))closePop()});$('#dd').addEventListener('pointerdown',e=>{S.pd=1;setTimeout(()=>S.pd=0,500);e.preventDefault()});
 function center(){const pg=S.lo.parentNode.parentNode,pr=pg.getBoundingClientRect(),wr=$('#work').getBoundingClientRect();return{cx:(Math.max(pr.left,wr.left)+Math.min(pr.right,wr.right))/2-pr.left,cy:(Math.max(pr.top,wr.top)+Math.min(pr.bottom,wr.bottom))/2-pr.top,pw:pr.width,ph:pr.height}}
 function addOp(base,hw,hh){const c=center(),a=S.g.toP(c.cx-hw,c.cy-hh),b=S.g.toP(c.cx+hw,c.cy+hh);snap();const op={...base,x:Math.min(a[0],b[0]),y:Math.min(a[1],b[1]),w:Math.abs(a[0]-b[0]),h:Math.abs(a[1]-b[1])};S.pages[S.cur].ops.push(op);S.op=op;S.tool='select';renderOps();panel()}
 const addPatch=()=>{const c=center();addOp({t:'patch',bg:S.pc,a:1,bc:'#000000',bw:0,f:0},Math.min(110,c.pw/4),Math.min(40,c.ph/8))};
@@ -354,8 +362,9 @@ function panel(){const P=$('#panel'),op=S.op;P.innerHTML='';closePop();S.dot=nul
   if(op.t=='patch'){const dot=el('span');dot.style.cssText='display:inline-block;width:12px;height:12px;margin-left:7px;border:1px solid #888;vertical-align:-1px;background:'+op.bg;ci.append(dot);S.dot=dot}
   ci.onclick=()=>S.pb===ci?closePop():showPop(ci,op);P.append(ci);if(op.t=='img')b('repeat','Replace image',()=>pickImg(id=>{snap();op.im=id;renderOps()}))}
  else if(op){if(op.det)info(op.det,'Detected font');
-  const fs=el('select');['Helvetica','Times','Courier','Devanagari'].forEach(v=>fs.add(new Option(v,v)));fs.value=op.f;fs.onchange=()=>fmt('f',fs.value);lab('font','Font',fs);
-  const sz=el('input');sz.type='number';Object.assign(sz,{min:3,max:200,step:.5});sz.value=op.sz;sz.onchange=()=>fmt('sz',+sz.value);lab('text-height','Size',sz);
+  const fs=el('select');Object.keys(FAM).forEach(v=>fs.add(new Option(v,v)));fs.value=op.f;fs.onchange=()=>fmt('f',fs.value);lab('font','Font',fs);
+  const sz=el('input');sz.type='number';Object.assign(sz,{min:1,max:100,step:.5});sz.value=op.sz;sz.onchange=()=>fmt('sz',Math.max(1,Math.min(100,+sz.value)));lab('text-height','Size',sz);
+  const dd=b('caret-down','Choose size',()=>showDD(dd,op,v=>{sz.value=v;fmt('sz',v)}));dd.style.minWidth='24px';dd.style.padding='4px 6px';
   b('bold','Bold',()=>fmt('b','toggle'),op.b?'on':'');b('italic','Italic',()=>fmt('i','toggle'),op.i?'on':'');
   const cl=el('input');cl.type='color';cl.value=op.c;cl.oninput=()=>{if(!(S.ed&&S.rng&&!S.rng.collapsed))fmt('c',cl.value)};cl.onchange=()=>fmt('c',cl.value);lab('droplet','Text colour',cl);
   if(op.t=='edit'){const cv=el('input');cv.type='color';cv.value=op.bg;cv.oninput=()=>{op.touched=true;snapT();op.bg=cv.value;renderOps()};lab('fill-drip','Cover colour',cv)}}
@@ -367,7 +376,7 @@ const hx=h=>{const n=parseInt(h.slice(1),16);return rgb((n>>16&255)/255,(n>>8&25
 const fname=(f,b,i)=>f=='Times'?'TimesRoman'+(b&&i?'BoldItalic':b?'Bold':i?'Italic':''):f+(b&&i?'BoldOblique':b?'Bold':i?'Oblique':'');
 let SRC={},LINKS=[];const FC=new Map(),IMC=new Map();
 const pngBytes=async c=>new Uint8Array(await (await new Promise(r=>c.toBlob(r,'image/png'))).arrayBuffer());
-const NONLAT=/[^\x20-\x7e\xa0-\xff\n]/;
+const NONLAT=/[^\x20-\x7e\xa0-\xff\n]/,STD=['Helvetica','Times','Courier'],needRaster=o=>runsOf(o).some(r=>NONLAT.test(r.s)||!STD.includes(sty(o,r).f));
 async function textPng(out,o){const k=4;try{await Promise.all(runsOf(o).map(r=>document.fonts.load(fstr(sty(o,r),k),r.s)))}catch(e){}
  const c=document.createElement('canvas'),x=c.getContext('2d'),n=lines(o).length,w=Math.ceil(drawRuns(x,o,k,1))+4,h=Math.ceil(n*1.2*o.sz*k+o.sz*k*.4);c.width=w;c.height=h;x.translate(0,o.sz*k*.945);drawRuns(x,o,k);
  return{img:await out.embedPng(await pngBytes(c)),w:w/k,h:h/k}}
@@ -387,7 +396,7 @@ async function drawInto(out,p,top){
    else{const f=await font(lo),tw=f.widthOfTextAtSize(o.lb,sz);pg.drawText(o.lb,{x:o.x+(o.w-tw)/2,y:o.y+o.h/2-sz*.35,size:sz,font:f,color:hx(o.fg)})}
    if(top)LINKS.push({pg,o,p})}
   else{if(o.t=='edit')pg.drawRectangle({x:o.x,y:o.y,width:o.w,height:o.h,color:hx(o.bg)});
-   if(runsOf(o).some(r=>NONLAT.test(r.s))){const im=await textPng(out,o);pg.drawImage(im.img,{x:o.x,y:o.bl+.945*o.sz-im.h,width:im.w,height:im.h})}
+   if(needRaster(o)){const im=await textPng(out,o);pg.drawImage(im.img,{x:o.x,y:o.bl+.945*o.sz-im.h,width:im.w,height:im.h})}
    else{const ls=lines(o);for(let j=0;j<ls.length;j++){let x=o.x;for(const g of ls[j]){const f=await font(g.st);pg.drawText(g.s,{x,y:o.bl-j*o.sz*1.2,size:g.st.sz,font:f,color:hx(g.st.c)});x+=f.widthOfTextAtSize(g.s,g.st.sz)}}}}}
  return{pg,t:(m.r0+p.rot)%360}}
 async function build(list){const out=await PDFDocument.create(),pgs=[];SRC={};LINKS=[];
@@ -408,4 +417,17 @@ $('#xpdf').onclick=()=>{$('#xm').style.display='none';exportPdf(S.fn)};$('#xpng'
 $('#xas').onclick=()=>{$('#xm').style.display='none';$('#sv').style.display='flex';const i=$('#svn');i.value=S.fn;i.focus();i.select()};
 const doSave=()=>{let n=$('#svn').value.trim()||'document.pdf';if(!/\.pdf$/i.test(n))n+='.pdf';S.fn=n;$('#sv').style.display='none';exportPdf(n)};
 $('#svok').onclick=doSave;$('#svx').onclick=()=>$('#sv').style.display='none';$('#svn').onkeydown=e=>{if(e.key=='Enter')doSave()};
+/* compress: pages are re-rendered at lower resolution / JPEG quality */
+const fmtB=n=>n>=1048576?(n/1048576).toFixed(2)+' MB':Math.max(1,Math.round(n/1024))+' KB';let CP={},cpTok=0,cpT;
+async function compressBuild(list,p){const out=await PDFDocument.create(),dpi=150-p*1.1,q=Math.max(.2,.9-p*.0085);
+ for(const pg of list){const d=await dims(pg),c=await renderPart(pg,Math.max(200,Math.round(d.w*dpi/72))),b=await new Promise(r=>c.toBlob(r,'image/jpeg',q)),im=await out.embedJpg(new Uint8Array(await b.arrayBuffer()));out.addPage([d.w,d.h]).drawImage(im,{x:0,y:0,width:d.w,height:d.h})}
+ return out.save()}
+async function cpUpdate(){const p=+$('#cpr').value,tk=++cpTok,i=$('#cpi'),n=S.pages.length;if(!n)return;$('#cpv').textContent=p+'%';
+ try{if(!CP.orig){i.textContent='Measuring original…';CP.orig=(await build(S.pages)).length;if(tk!==cpTok)return}
+  i.textContent='Original '+fmtB(CP.orig)+' → estimating…';const idx=[0,Math.floor(n/2),n-1].filter((v,k,a)=>a.indexOf(v)==k),by=(await compressBuild(idx.map(k=>S.pages[k]),p)).length;if(tk!==cpTok)return;
+  const est=by*n/idx.length;i.textContent='Original '+fmtB(CP.orig)+' → about '+fmtB(est)+(est>=CP.orig?' (no saving at this level)':' · '+Math.round((1-est/CP.orig)*100)+'% smaller')}catch(e){i.textContent='Could not estimate'}}
+$('#xcp').onclick=()=>{$('#xm').style.display='none';const c=$('#cp'),r=$('#exp').getBoundingClientRect();CP={};c.style.display='flex';c.style.top=r.bottom+6+'px';c.style.right=innerWidth-r.right+'px';cpUpdate()};
+$('#cpr').oninput=()=>{$('#cpv').textContent=$('#cpr').value+'%';$('#cpi').textContent='Calculating…';clearTimeout(cpT);cpT=setTimeout(cpUpdate,450)};
+$('#cpd').onclick=async()=>{try{say('Compressing…');const b=await compressBuild(S.pages,+$('#cpr').value);deliver(new Blob([b],{type:'application/pdf'}),S.fn.replace(/\.pdf$/i,'')+'-compressed.pdf');say('Compressed to '+fmtB(b.length)+'. Text becomes part of the page image.')}catch(e){say('Compression failed: '+e.message)}};
+addEventListener('pointerdown',e=>{if(!e.target.closest('#cp,#xcp'))$('#cp').style.display='none'});
 </script></body></html>
